@@ -30,4 +30,11 @@ public class ItemService {
     public Item findOne(Long id) {
         return itemRepository.findOne(id);
     }
+
+    // Item 변경 (변경 감지)
+    @Transactional
+    public void updateItem(Long id, String name, int price, int stockQuantity) {
+        Item findItem = itemRepository.findOne(id);
+        findItem.changeItem(name, price, stockQuantity);
+    }
 }
