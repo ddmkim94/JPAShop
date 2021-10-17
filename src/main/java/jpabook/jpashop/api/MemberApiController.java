@@ -4,9 +4,8 @@ import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
 import lombok.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.hibernate.sql.Update;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -16,6 +15,15 @@ import javax.validation.constraints.NotEmpty;
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    // 회원 수정 API
+    // V1이 없음...
+    @PutMapping("api/v2/members/{id}")
+    public UpdateMemberResponse updateMemberV2(@PathVariable("id") Long id, @RequestBody @Valid UpdateMemberRequest request) {
+        memberService.update(id, request.getName()); // 수정
+        Member findMember = memberService.findOne(id); // 수정된 회원 조회
+        return new UpdateMemberResponse(findMember.getId(), findMember.getName());
+    }
 
     /* V2(DTO)
        - 엔티티가 변해도 API 스펙이 바뀌지 않음
@@ -36,7 +44,7 @@ public class MemberApiController {
 
     @PostMapping("api/v1/members")
     // @RequestBody: 클라이언트가 전송하는 Json 데이터를 Java Object로 변환해서 받아주는 역할
-    // @ResponseBody: 서버에서 클라이언트로 응답데이터를 전송하기 위해서 자바 객체를 Http 응답 객체로 변환
+    // @ResponseBody: 자바 객체를 JSON 형태로 반환, 데이터를 바로 JSON or XML로 보내자!
     // @Valid: Controller 단에서 객체를 검증하고 싶을 때 사용!
     /* v1의 문제점...
        파라미터로 엔티티를 그대로 받기 때문에 엔티티의 내용이 수정되면 api의 스펙 자체가 변경되버림
@@ -67,5 +75,19 @@ public class MemberApiController {
         @NotEmpty
         private String name;
         private Address address;
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class UpdateMemberResponse {
+
+        private Long id;
+        private String name;
+    }
+
+    @Data
+    private static class UpdateMemberRequest {
+
+        private String name;
     }
 }
