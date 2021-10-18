@@ -9,12 +9,36 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    // 회원 조회 시 엔티티를 외부에 직접 노출하지말고 무조건 DTO로 바꿔라!!
+    // API를 만들때는 파라미터로 받는 나가든 엔티티를 절대 노출하거나 받지마! API 스펙에 맞는 DTO를 만들어서 사용해라.
+    @GetMapping("api/v2/members")
+    public Result<List<MemberDTO>> membersV2() {
+        List<Member> findMembers = memberService.findMembers();
+        List<MemberDTO> members = new ArrayList<>();
+
+        for (Member findMember : findMembers) {
+            members.add(new MemberDTO(findMember.getName(), findMember.getAddress()));
+        }
+
+        return new Result<>(members.size(), members);
+    }
+
+
+    // 회원 조회
+    @GetMapping("api/v1/members")
+    public List<Member> membersV1() {
+        return memberService.findMembers();
+    }
 
     // 회원 수정 API
     // V1이 없음...
@@ -89,5 +113,23 @@ public class MemberApiController {
     private static class UpdateMemberRequest {
 
         private String name;
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class Result<T> {
+
+        private int count;
+        private T members;
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class MemberDTO {
+
+        // 노출하고 싶은 필드만 지정해서 사용
+        // DTO - API가 1대1로 매핑되는 것
+        private String name;
+        private Address address;
     }
 }
