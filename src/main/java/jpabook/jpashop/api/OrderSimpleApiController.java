@@ -21,6 +21,14 @@ public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
 
+    @GetMapping("api/v3/simple-orders")
+    public Result<SimpleOrderDTO> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
+        List<SimpleOrderDTO> findOrders = orders.stream().map(SimpleOrderDTO::new).collect(Collectors.toList());
+
+        return new Result<>(findOrders.size(), findOrders);
+    }
+
     // V1 Upgrade!
     @GetMapping("api/v2/simple-orders")
     public Result<SimpleOrderDTO> ordersV2() {
