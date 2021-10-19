@@ -5,6 +5,8 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDTO;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,17 @@ import java.util.stream.Collectors;
 public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
+    @GetMapping("api/v4/simple-orders")
+    public List<OrderSimpleQueryDTO> ordersV4() {
+        return orderSimpleQueryRepository.findOrderDTOs();
+    }
+
+    /*
+        Repository 계층은 순수 Entity를 조회하는데 사용하는 것이 맞음 -> V3까지가 용도에 맞다
+        V4는 따로 분리해서 관리하는 게 좋음
+     */
     @GetMapping("api/v3/simple-orders")
     public Result<SimpleOrderDTO> ordersV3() {
         List<Order> orders = orderRepository.findAllWithMemberDelivery();
