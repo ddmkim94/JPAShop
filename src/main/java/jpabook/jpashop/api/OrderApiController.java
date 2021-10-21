@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,11 +38,20 @@ public class OrderApiController {
         return all;
     }
 
+    // 컬렉션 조회 (엔티티 -> DTO 변환)
     @GetMapping("api/v2/orders")
     public List<OrderDTO> ordersV2() {
 
         List<Order> findOrders = orderRepository.findByString(new OrderSearch());
         return findOrders.stream()
+                .map(OrderDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("api/v3/orders")
+    public List<OrderDTO> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithItem();
+        return orders.stream()
                 .map(OrderDTO::new)
                 .collect(Collectors.toList());
     }
@@ -81,22 +91,6 @@ public class OrderApiController {
             itemName = orderItem.getItem().getName();
             orderPrice = orderItem.getOrderPrice();
             count = orderItem.getCount();
-        }
-    }
-
-    @Data
-    private static class ItemDTO {
-
-        private Long id;
-        private String name;
-        private int price;
-        private int stockQuantity;
-
-        public ItemDTO(Item item) {
-            id = item.getId();
-            name = item.getName();
-            price = item.getPrice();
-            stockQuantity = item.getStockQuantity();
         }
     }
 }

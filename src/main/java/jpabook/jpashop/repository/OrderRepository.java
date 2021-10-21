@@ -64,4 +64,22 @@ public class OrderRepository {
                 " join fetch o.member" +
                 " join fetch o.delivery", Order.class).getResultList();
     }
+
+    /*
+        distinct의 기능
+        1. db 쿼리문에 distinct를 날려준다
+        2. 엔티티가 중복되는 경우 걸러서 컬렉션에 담아준다
+     */
+    /*
+        컬렉션 패치 조인(일대다 관계)을 사용하면 페이징 불가능 -> 메모리에서 페이징(ㅈㄴ위험)
+        컬렉션 패치 조인은 1개만 사용해라 -> 여러 개를 사용하게 되면 데이터가 N * N개가 되어버림
+     */
+    public List<Order> findAllWithItem() {
+        return em.createQuery
+                ("select distinct o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d" +
+                " join fetch o.orderItems oi" +
+                " join fetch oi.item i", Order.class).getResultList();
+    }
 }
