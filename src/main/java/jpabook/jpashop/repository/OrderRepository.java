@@ -82,4 +82,15 @@ public class OrderRepository {
                 " join fetch o.orderItems oi" +
                 " join fetch oi.item i", Order.class).getResultList();
     }
+
+    // toOne 관계는 fetch join으로 다 잡고 가는 것이 좋다!!
+    // Order만 써도 최적화가 되지만 member, delivery 쿼리가 별도로 나가기 때문에 네트워크를 더 많이 타게됨
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery("select o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }

@@ -12,6 +12,8 @@ spring:
       hibernate:
         # show_sql: true 콘솔 레벨에 찍음
         format_sql: true # logger에 쿼리문을 포맷팅해서 찍어줌
+        # 최적화 옵션: 컬렉션 쿼리 호출 수가 1 + N -> 1 + 1로 최적화
+        default_batch_fetch_size: 1000
 
 logging.level:
   org.hibernate.SQL: debug
