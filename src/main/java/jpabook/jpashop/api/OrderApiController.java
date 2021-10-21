@@ -6,6 +6,8 @@ import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.order.query.OrderQueryDTO;
+import jpabook.jpashop.repository.order.query.OrderQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class OrderApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderQueryRepository orderQueryRepository;
 
     // 컬렉션 조회 (엔티티 직접 노출)
     @GetMapping("api/v1/orders")
@@ -64,6 +67,12 @@ public class OrderApiController {
                 .map(OrderDTO::new)
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("api/v4/orders")
+    public List<OrderQueryDTO> ordersV4() {
+        return orderQueryRepository.findOrderQueryDTOs();
+    }
+
 
     // 해당 필드들의 정보만 가져옴
     // DTO로 감싸서 사용하는 경우 안에 있는 필드도 DTO로 감싸야하는 경우 같이 감싸서 보내라!
