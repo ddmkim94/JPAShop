@@ -73,6 +73,11 @@ public class OrderApiController {
         return orderQueryRepository.findOrderQueryDTOs();
     }
 
+    @GetMapping("api/v5/orders")
+    public List<OrderQueryDTO> ordersV5() {
+        return orderQueryRepository.findAllByDTO_optimization();
+    }
+
 
     // 해당 필드들의 정보만 가져옴
     // DTO로 감싸서 사용하는 경우 안에 있는 필드도 DTO로 감싸야하는 경우 같이 감싸서 보내라!
